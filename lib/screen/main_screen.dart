@@ -76,22 +76,27 @@ class _MainScreenState extends State<MainScreen> {
                     child: Container(
                       margin: const EdgeInsets.all(8),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             newsItem['title'],
                             style: const TextStyle(
                               color: Colors.white,
-                              fontSize: 16,
+                              fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
+                          const SizedBox(
+                            height: 6,
+                          ),
                           Align(
                             alignment: Alignment.bottomRight,
                             child: Text(
-                              formatData(newsItem['publishedAt']),
-                              style: const TextStyle(color: Colors.white),
+                              formatDate(newsItem['publishedAt']),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 10),
                             ),
                           ),
                         ],
@@ -103,13 +108,16 @@ class _MainScreenState extends State<MainScreen> {
                 ],
               ),
             ),
+            onTap: () {
+              Navigator.pushNamed(context, '/detail', arguments: newsItem);
+            },
           );
         },
       ),
     );
   }
 
-  String formatData(String dateString) {
+  String formatDate(String dateString) {
     //시간 문자열 값을 원하는 형식으로 변환해주는 유틸 메소드 함수
     final dateTime = DateTime.parse(dateString);
     final formatter = DateFormat('yyyy.MM,dd HH:mm');
@@ -128,10 +136,10 @@ class _MainScreenState extends State<MainScreen> {
       if (response.statusCode == 200) {
         //200 -> result Ok
         final Map<String, dynamic> responseData = json.decode(response.body);
-        lstNewsInfo = responseData['articles'];
-        for (var element in lstNewsInfo) {
-          print(element);
-        }
+
+        setState(() {
+          lstNewsInfo = responseData['articles'];
+        });
       } else {
         throw Exception('Failed to load news');
       }
